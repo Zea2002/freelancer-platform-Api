@@ -29,6 +29,10 @@ SECRET_KEY = 'django-insecure--lx3*umpx0jxawt&f2tr5gv0nevx^hmerkwkom+ui#dkue$me@
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
+CSRF_TRUSTED_ORIGINS = [
+    'https://freelancer-platform-api-17pq.onrender.com'
+]
+
 
 
 # Application definition

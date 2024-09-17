@@ -1,0 +1,5 @@
+Hi {{ user.username }},
+
+Please click the link below to verify your email and activate your account:
+
+<a href="http://{{ domain }}{% url 'activate' uid=uid token=token %}">Activate Account</a>

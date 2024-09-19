@@ -50,6 +50,7 @@ INSTALLED_APPS = [
       'corsheaders',
     'project',
     'user',
+    'contact',
     'proposal',
     'review',
     'transaction',

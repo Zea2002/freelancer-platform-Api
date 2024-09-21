@@ -30,7 +30,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 CSRF_TRUSTED_ORIGINS = [
-    'https://freelancer-platform-api-17pq.onrender.com'
+    'https://freelancer-platform-api-17pq.onrender.com', "http://127.0.0.1:5500"
 ]
 
 

@@ -9,7 +9,7 @@ environ.Env.read_env()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env('SECRET_KEY', default='your-secret-key')
+SECRET_KEY = env('SECRET_KEY')
 
 DEBUG = True
 

@@ -2,10 +2,12 @@ from rest_framework import status, viewsets
 from rest_framework.response import Response
 from .models import Contact
 from .serializers import ContactSerializer
+from rest_framework.permissions import AllowAny
 
 class ContactViewSet(viewsets.ModelViewSet):
     queryset = Contact.objects.all()
     serializer_class = ContactSerializer
+    permission_classes = [AllowAny]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)

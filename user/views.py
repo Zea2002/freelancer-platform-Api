@@ -58,10 +58,11 @@ class ActivateView(views.APIView):
 
 class LoginView(views.APIView):
     def post(self, request):
+        print(request.data)  # Log the request data
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
-            email = serializer.data['email']
-            password = serializer.data['password']
+            email = serializer.validated_data['email']
+            password = serializer.validated_data['password']
             user = authenticate(request, username=email, password=password)
 
             if user is not None:
@@ -70,6 +71,7 @@ class LoginView(views.APIView):
                 return Response({'token': token.key}, status=status.HTTP_200_OK)
             return Response({'message': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class LogoutView(views.APIView):
     permission_classes = [IsAuthenticated]

@@ -9,7 +9,7 @@ from user.permission import IsClientOrReadOnly,IsClient
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-    permission_classes = [IsClientOrReadOnly]
+    # permission_classes = [IsClientOrReadOnly]
 
     def get_permissions(self):
         if self.action == 'create':

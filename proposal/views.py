@@ -9,7 +9,7 @@ class ProposalViewSet(viewsets.ModelViewSet):
     queryset = Proposal.objects.all()
     serializer_class = ProposalSerializer
     pagination_class = ProposalPagination
-    permission_classes=[IsFreelancer]
+    # permission_classes=[IsFreelancer]
 
     def perform_create(self, serializer):
         if hasattr(self.request.user, 'freelancer_profile'):

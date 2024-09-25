@@ -9,7 +9,7 @@ from user.permission import IsClientOrReadOnly
 class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
-    permission_classes=[IsClientOrReadOnly]
+    # permission_classes=[IsClientOrReadOnly]
     pagination_class = ProjectPagination
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     

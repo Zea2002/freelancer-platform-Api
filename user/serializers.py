@@ -62,8 +62,9 @@ class LoginSerializer(serializers.Serializer):
         email = data.get('email')
         password = data.get('password')
 
+        user = User.objects.filter(email=email).first()
         if email and password:
-            user = authenticate(email=email, password=password)
+            user = authenticate(username=user.username, password=password)
 
             if user is None:
                 raise serializers.ValidationError(_('Invalid email or password'))

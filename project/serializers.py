@@ -1,14 +1,18 @@
 from rest_framework import serializers
 from .import models
-class ProjectSerializer(serializers.ModelSerializer):
-    client = serializers.ReadOnlyField(source='client.username')
-    category = serializers.StringRelatedField()
-    class Meta:
-        model = models.Project
-        fields = '__all__'
+from user.models import ClientProfile
 
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Category
-        fields ='__all__'
+        fields = '__all__'
+
+class ProjectSerializer(serializers.ModelSerializer):
+    client = serializers.SlugRelatedField(slug_field='user.username', queryset=ClientProfile.objects.all())    
+    category = serializers.SlugRelatedField(slug_field='name', queryset=models.Category.objects.all())    
+
+    class Meta:
+        model = models.Project
+        fields = '__all__'
+

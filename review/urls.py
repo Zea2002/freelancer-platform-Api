@@ -1,7 +1,10 @@
-from django.urls import path
-from .views import ReviewCreateView, ReviewListView
+from rest_framework.routers import DefaultRouter
+from .views import ReviewViewSet
+from django.urls import path, include
+
+router = DefaultRouter()
+router.register(r'reviews', ReviewViewSet)
 
 urlpatterns = [
-    path('reviews/create/', ReviewCreateView.as_view(), name='review-create'),
-    path('', ReviewListView.as_view(), name='review-list'),
+    path('', include(router.urls)),
 ]

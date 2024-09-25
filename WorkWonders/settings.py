@@ -1,6 +1,5 @@
 from pathlib import Path
 import environ
-from datetime import timedelta
 
 # Initialize environment variables
 env = environ.Env()
@@ -38,6 +37,7 @@ INSTALLED_APPS = [
     'contact',
     'proposal',
     'review',
+    'service',
     'transaction',
     'allauth',
     'allauth.account',
@@ -116,7 +116,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 AUTH_USER_MODEL = 'user.User'
 
 # CORS settings
-CORS_ALLOW_ALL_ORIGINS = True  # Allow all origins for now (consider restricting in production)
+CORS_ALLOW_ALL_ORIGINS = True  
 CORS_ALLOW_HEADERS = [
     "accept", "accept-encoding", "authorization", "content-type",
     "dnt", "origin", "user-agent", "x-csrftoken", "x-requested-with"
@@ -126,11 +126,10 @@ CORS_ALLOW_METHODS = [
 ]
 CORS_ALLOW_CREDENTIALS = True
 
-# REST framework settings (token-based or JWT authentication)
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',  # Token-based authentication
-    ],
+    # 'DEFAULT_AUTHENTICATION_CLASSES': [
+    #     'rest_framework.authentication.TokenAuthentication',  # Token-based authentication
+    # ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ],
@@ -139,15 +138,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 100,
 }
 
-# JWT configuration (optional if you decide to use JWT authentication)
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-    'ROTATE_REFRESH_TOKENS': False,
-    'BLACKLIST_AFTER_ROTATION': True,
-}
-
-# Email settings (replace with your environment variables)
+# Email settings (replace with environment variables)
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True

@@ -1,10 +1,11 @@
 from rest_framework import serializers
-from .import models
+from .models import Proposal
+from user.models import FreelancerProfile
+from project.models import Project
 
 class ProposalSerializer(serializers.ModelSerializer):
-    freelancer = serializers.ReadOnlyField(source='freelancer.user.username')
-    project = serializers.ReadOnlyField(source='project.title')
-
+    freelancer = serializers.SlugRelatedField(slug_field='user.username', queryset=FreelancerProfile.objects.all())
+    project= serializers.SlugRelatedField(slug_field='title', queryset=Project.objects.all())
     class Meta:
-        model = models.Proposal
+        model = Proposal
         fields = '__all__'

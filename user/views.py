@@ -1,85 +1,91 @@
 from django.contrib.auth import get_user_model, authenticate, login, logout
-from django.contrib.sites.shortcuts import get_current_site
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.utils.encoding import force_bytes, force_str
+from django.utils.encoding import force_bytes,force_str
+from django.urls import reverse
 from django.template.loader import render_to_string
-from django.core.mail import send_mail
-from rest_framework.permissions import AllowAny
+from django.contrib.auth.tokens import default_token_generator
 from rest_framework.response import Response
-from rest_framework import status, views, generics
+from rest_framework import status, views,viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.models import Token
-from .serializers import RegisterSerializer, LoginSerializer, UpdateProfileSerializer, ChangePasswordSerializer, FreelancerProfileSerializer
-from .tokens import account_activation_token
-from .models import FreelancerProfile, Skill
+from .serializers import RegisterSerializer, LoginSerializer, UpdateProfileSerializer, ChangePasswordSerializer, FreelancerProfileSerializer,ClientProfileSerializer,SkillSerializer
+from .models import FreelancerProfile, Skill,ClientProfile
 from .pagination import FreelancerPagination
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter
+from django.core.mail import EmailMultiAlternatives
+from django.shortcuts import redirect
 
 User = get_user_model()
 
 class RegisterView(views.APIView):
-    permission_classes = [AllowAny]
+    serializer_class = RegisterSerializer
+
     def post(self, request):
-        serializer = RegisterSerializer(data=request.data)
+        serializer = self.serializer_class(data=request.data)
+
         if serializer.is_valid():
             user = serializer.save()
-            user.is_active = False  # Deactivate the account until it is verified
+            user.is_active = False
             user.save()
 
-            # Send activation email
-            token = account_activation_token.make_token(user)
+            # Generate token and UID
+            token = default_token_generator.make_token(user)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
-            current_site = get_current_site(request)
-            mail_subject = 'Activate your account.'
-            message = render_to_string('activation_email.html', {
-                'user': user,
-                'domain': current_site.domain,
-                'uid': uid,
-                'token': token,
-            })
-            send_mail(mail_subject, message, 'admin@yourdomain.com', [user.email])
 
-            return Response({'message': 'Registration successful. Please check your email to activate your account.'}, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            # Debugging: print UID and token to ensure they are correct
+            print(f"UID: {uid}, Token: {token}")
 
-class ActivateView(views.APIView):
-    def get(self, request, uidb64, token):
-        try:
-            uid = force_str(urlsafe_base64_decode(uidb64))
-            user = User.objects.get(pk=uid)
-        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-            user = None
+            # Try generating activation link using reverse
+            try:
+                activation_link = reverse('activate', kwargs={'uid64': uid, 'token': token})
+                confirm_link = f"http://{request.get_host()}{activation_link}"
+            except Exception as e:
+                print(f"Error generating URL: {e}")
+                return Response({"error": "Error generating activation link"}, status=400)
 
-        if user is not None and account_activation_token.check_token(user, token):
-            user.is_active = True
-            user.save()
-            return Response({'message': 'Account activated successfully!'}, status=status.HTTP_200_OK)
-        else:
-            return Response({'message': 'Activation link is invalid!'}, status=status.HTTP_400_BAD_REQUEST)
+            # Prepare and send email
+            email_subject = "Confirm Your Email"
+            email_body = render_to_string('activation_email.html', {'confirm_link': confirm_link})
+
+            email = EmailMultiAlternatives(email_subject, '', to=[user.email])
+            email.attach_alternative(email_body, "text/html")
+            email.send()
+
+            return Response("Check your email for confirmation.")
+        return Response(serializer.errors)
+
+def activate(request, uid64, token):
+    try:
+        # Decode UID from base64
+        uid = force_str(urlsafe_base64_decode(uid64))
+        user = User._default_manager.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    # Check if token is valid
+    if user is not None and default_token_generator.check_token(user, token):
+        user.is_active = True
+        user.save()
+        return redirect('login')
+    else:
+        return redirect('register')
 
 class LoginView(views.APIView):
-    def post(self, request):
-        print(request.data)  # Log the request data
-        serializer = LoginSerializer(data=request.data)
-        if serializer.is_valid():
-            email = serializer.validated_data['email']
-            password = serializer.validated_data['password']
-            user = authenticate(request, username=email, password=password)
+    serializer_class = LoginSerializer
 
-            if user is not None:
-                login(request, user)
-                token, created = Token.objects.get_or_create(user=user)
-                return Response({'token': token.key}, status=status.HTTP_200_OK)
-            return Response({'message': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            user = serializer.validated_data['user']
+            login(request, user)  # Log the user in (session-based)
+            return Response({"message": "Login successful"}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
 class LogoutView(views.APIView):
-    permission_classes = [IsAuthenticated]
-
     def post(self, request):
-        request.user.auth_token.delete()
-        logout(request)
-        return Response({'message': 'Logged out successfully!'}, status=status.HTTP_200_OK)
+        logout(request) 
+        return Response({"message": "Logout successful"}, status=status.HTTP_200_OK),redirect('login')
 
 class UpdateProfileView(views.APIView):
     permission_classes = [IsAuthenticated]
@@ -108,10 +114,19 @@ class ChangePasswordView(views.APIView):
             return Response({'message': 'Password changed successfully'}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class FreelancerProfileListView(generics.ListAPIView):
+
+
+class ClientProfileViewSet(viewsets.ModelViewSet):
+    queryset = ClientProfile.objects.all()
+    serializer_class = ClientProfileSerializer
+
+class FreelancerProfileViewSet(viewsets.ModelViewSet):
+    queryset = FreelancerProfile.objects.all()
     serializer_class = FreelancerProfileSerializer
     pagination_class = FreelancerPagination
-
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_fields = ['skills']  
+    search_fields = ['skills__name']
     def get_queryset(self):
         queryset = FreelancerProfile.objects.all()
         skill_slug = self.request.query_params.get('skill', None)
@@ -120,3 +135,8 @@ class FreelancerProfileListView(generics.ListAPIView):
             if skill:
                 queryset = queryset.filter(skills=skill)
         return queryset
+
+
+class SkillViewSet(viewsets.ModelViewSet):
+    queryset = Skill.objects.all()
+    serializer_class = SkillSerializer

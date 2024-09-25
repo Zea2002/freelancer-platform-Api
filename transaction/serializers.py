@@ -1,16 +1,19 @@
 
 from rest_framework import serializers
 from .models import Transaction
-from user.models import ClientProfile  
 
 class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
-        fields = '__all__'
+        fields = ['id', 'sender', 'receiver', 'amount', 'transaction_type', 'created_at']
+        read_only_fields = ['created_at']
 
     def validate(self, data):
+        sender_profile = data['sender'].clientprofile
+        amount = data['amount']
+
         if data['transaction_type'] in ['withdrawal', 'payment']:
-            sender_profile = ClientProfile.objects.get(user=data['sender']) 
-            if sender_profile.balance < data['amount']:
-                raise serializers.ValidationError('Insufficient funds.')
+            if sender_profile.balance < amount:
+                raise serializers.ValidationError("Insufficient funds for withdrawal or payment.")
+
         return data

@@ -1,10 +1,12 @@
 from rest_framework import serializers
 from .import models
+from user.models import FreelancerProfile,ClientProfile
+from project.models import Project
 
 class ReviewSerializer(serializers.ModelSerializer):
-    reviewer = serializers.ReadOnlyField(source='reviewer.user.username')
-    freelancer = serializers.ReadOnlyField(source='freelancer.user.username')
-    project = serializers.ReadOnlyField(source='project.title')
+    freelancer = serializers.SlugRelatedField(slug_field='user.username', queryset=FreelancerProfile.objects.all())
+    project = serializers.SlugRelatedField(slug_field='title', queryset=Project.objects.all())
+    reviewer = serializers.SlugRelatedField(slug_field='user.username', queryset=ClientProfile.objects.all())
     class Meta:
         model = models.Review
         fields = '__all__'

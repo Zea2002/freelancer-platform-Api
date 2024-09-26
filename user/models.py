@@ -25,7 +25,7 @@ class Skill(models.Model):
         return self.name
 
 class FreelancerProfile(models.Model):
-    user = models.OneToOneField(User.FREELANCER, on_delete=models.CASCADE, related_name='freelancer_profile')
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='freelancer_profile')
     skills = models.ManyToManyField(Skill, related_name='freelancers')
     profile_pic = models.ImageField(upload_to='user/media/freelancer/', null=True, blank=True)
     portfolio_url = models.URLField(blank=True)

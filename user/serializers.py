@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from .models import FreelancerProfile, Skill, ClientProfile
 from django.contrib.auth import get_user_model
-from django.contrib.auth import authenticate
 from django.utils.translation import gettext_lazy as _
 
 class SkillSerializer(serializers.ModelSerializer):
@@ -54,27 +53,9 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 
-class LoginSerializer(serializers.Serializer):
-    email = serializers.EmailField()
-    password = serializers.CharField(write_only=True, style={'input_type': 'password'})
-
-    def validate(self, data):
-        email = data.get('email')
-        password = data.get('password')
-
-        if not email or not password:
-            raise serializers.ValidationError(_('Both "email" and "password" are required.'))
-
-        
-        user = authenticate(username=email, password=password)  
-
-        if user is None:
-            raise serializers.ValidationError(_('Invalid email or password'))
-        if not user.is_active:
-            raise serializers.ValidationError(_('User account is disabled.'))
-
-        data['user'] = user
-        return data
+class UserLoginSerializer(serializers.Serializer):
+    email= serializers.EmailField(required = True)
+    password = serializers.CharField(required = True)
 
 class UpdateProfileSerializer(serializers.ModelSerializer):
     class Meta:

@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model,login, logout
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.urls import reverse
-from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
 from django.template.loader import render_to_string
 from django.contrib.auth.tokens import default_token_generator
@@ -11,7 +11,7 @@ from rest_framework import status, views, viewsets
 from rest_framework.permissions import IsAuthenticated
 from django.core.mail import EmailMultiAlternatives
 from django.shortcuts import redirect
-from .serializers import (RegisterSerializer, LoginSerializer, 
+from .serializers import (RegisterSerializer, UserLoginSerializer,
                           UpdateProfileSerializer, ChangePasswordSerializer, 
                           FreelancerProfileSerializer, ClientProfileSerializer, 
                           SkillSerializer)
@@ -72,18 +72,22 @@ def activate(request, uid64, token):
         frontend_register_url = f"http://{frontend_domain}/register"
         return redirect(frontend_register_url)
 
-class LoginView(views.APIView):
-    serializer_class = LoginSerializer
-
-    @csrf_exempt  
+class UserLoginApiView(views.APIView):
     def post(self, request):
-        serializer = self.serializer_class(data=request.data)
+        serializer = UserLoginSerializer(data=request.data)
         if serializer.is_valid():
-            user = serializer.validated_data['user']
-            token, created = Token.objects.get_or_create(user=user)
-            return Response({"token": token.key}, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            email = serializer.validated_data['email']
+            password = serializer.validated_data['password']
 
+            user = authenticate(username=email, password=password)
+            
+            if user:
+                token, _ = Token.objects.get_or_create(user=user)
+                login(request, user)  
+                return Response({'token': token.key, 'user_id': user.id}, status=status.HTTP_200_OK)
+            else:
+                return Response({'error': "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LogoutView(views.APIView):
     def post(self, request):

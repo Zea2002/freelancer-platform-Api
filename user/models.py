@@ -25,7 +25,7 @@ class Skill(models.Model):
         return self.name
 
 class FreelancerProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='freelancer_profile')
+    user = models.OneToOneField(User.FREELANCER, on_delete=models.CASCADE, related_name='freelancer_profile')
     skills = models.ManyToManyField(Skill, related_name='freelancers')
     profile_pic = models.ImageField(upload_to='user/media/freelancer/', null=True, blank=True)
     portfolio_url = models.URLField(blank=True)
@@ -39,7 +39,7 @@ class FreelancerProfile(models.Model):
         return f'{self.user.first_name} {self.user.last_name}'
 
 class ClientProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='client_profile')
+    user = models.OneToOneField(User.CLIENT, on_delete=models.CASCADE, related_name='client_profile')
     company_name = models.CharField(max_length=100, blank=True)
     phone = models.CharField(max_length=12)
     profile_pic = models.ImageField(upload_to='user/media/client/', null=True, blank=True)

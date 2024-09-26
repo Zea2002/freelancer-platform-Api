@@ -65,7 +65,7 @@ def activate(request, uid64, token):
 
         # Redirect to frontend login page after successful activation
         frontend_domain = request.get_host()
-        frontend_login_url = f"http://{frontend_domain}/login"
+        frontend_login_url = f"http://{frontend_domain}/login?activated=true"
         return redirect(frontend_login_url)
     else:
         frontend_domain = request.get_host()

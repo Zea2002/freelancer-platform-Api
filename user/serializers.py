@@ -62,21 +62,18 @@ class LoginSerializer(serializers.Serializer):
         email = data.get('email')
         password = data.get('password')
 
-        user = User.objects.filter(email=email).first()
-        if email and password:
-            user = authenticate(username=user.username, password=password)
-
-            if user is None:
-                raise serializers.ValidationError(_('Invalid email or password'))
-            if not user.is_active:
-                raise serializers.ValidationError(_('User account is disabled.'))
-
-        else:
+        if not email or not password:
             raise serializers.ValidationError(_('Both "email" and "password" are required.'))
+
+        user = authenticate(username=email, password=password)
+        
+        if user is None:
+            raise serializers.ValidationError(_('Invalid email or password'))
+        if not user.is_active:
+            raise serializers.ValidationError(_('User account is disabled.'))
 
         data['user'] = user
         return data
-
 
 class UpdateProfileSerializer(serializers.ModelSerializer):
     class Meta:

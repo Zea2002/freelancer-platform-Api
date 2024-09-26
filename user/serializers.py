@@ -65,8 +65,9 @@ class LoginSerializer(serializers.Serializer):
         if not email or not password:
             raise serializers.ValidationError(_('Both "email" and "password" are required.'))
 
-        user = authenticate(username=user.username, password=password)
         
+        user = authenticate(username=email, password=password)  
+
         if user is None:
             raise serializers.ValidationError(_('Invalid email or password'))
         if not user.is_active:

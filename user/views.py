@@ -76,10 +76,10 @@ class UserLoginApiView(views.APIView):
     def post(self, request):
         serializer = UserLoginSerializer(data=request.data)
         if serializer.is_valid():
-            email = serializer.validated_data['email']
+            username = serializer.validated_data['username']
             password = serializer.validated_data['password']
 
-            user = authenticate(username=email, password=password)
+            user = authenticate(username=username, password=password)
             
             if user:
                 token, _ = Token.objects.get_or_create(user=user)

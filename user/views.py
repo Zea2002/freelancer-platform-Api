@@ -91,6 +91,7 @@ class UserLoginApiView(views.APIView):
 
 class LogoutView(views.APIView):
     def post(self, request):
+        request.user.auth_token.delete()
         logout(request)
         frontend_domain = request.get_host()
         frontend_login_url = f"http://{frontend_domain}/login"

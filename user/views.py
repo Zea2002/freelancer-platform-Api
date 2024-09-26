@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model,login, logout
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.authtoken.models import Token
 from django.template.loader import render_to_string
 from django.contrib.auth.tokens import default_token_generator
@@ -74,6 +75,7 @@ def activate(request, uid64, token):
 class LoginView(views.APIView):
     serializer_class = LoginSerializer
 
+    @csrf_exempt  
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
@@ -81,6 +83,7 @@ class LoginView(views.APIView):
             token, created = Token.objects.get_or_create(user=user)
             return Response({"token": token.key}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class LogoutView(views.APIView):
     def post(self, request):

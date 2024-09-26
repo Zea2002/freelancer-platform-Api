@@ -149,7 +149,7 @@ EMAIL_HOST_PASSWORD = env('EMAIL_PASSWORD')
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-AUTHENTICATION_BACKENDS = [
-    'user.backend.EmailBackend',  
-    'django.contrib.auth.backends.ModelBackend',
-]
+# AUTHENTICATION_BACKENDS = [
+#     'user.backend.EmailBackend',  
+#     'django.contrib.auth.backends.ModelBackend',
+# ]

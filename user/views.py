@@ -90,12 +90,14 @@ class UserLoginApiView(views.APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LogoutView(views.APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
-        request.user.auth_token.delete()
-        logout(request)
-        frontend_domain = request.get_host()
-        frontend_login_url = f"http://{frontend_domain}/login"
-        return redirect(frontend_login_url)
+        if hasattr(request.user, 'auth_token'):
+            request.user.auth_token.delete()
+        
+        logout(request) 
+        return Response({'message': 'Logged out successfully'}, status=status.HTTP_200_OK)
 
 class UpdateProfileView(views.APIView):
     permission_classes = [IsAuthenticated]

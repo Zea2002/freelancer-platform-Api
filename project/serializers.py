@@ -9,7 +9,7 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ProjectSerializer(serializers.ModelSerializer):
-    client = serializers.SlugRelatedField(slug_field='user.username', queryset=ClientProfile.objects.all())    
+    client = serializers.SlugRelatedField(slug_field='user__username', queryset=ClientProfile.objects.all())   
     category = serializers.SlugRelatedField(slug_field='name', queryset=models.Category.objects.all())    
 
     class Meta:

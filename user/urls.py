@@ -1,11 +1,12 @@
 from django.urls import path,include
-from .views import RegisterView, activate, UserLoginApiView, LogoutView, UpdateProfileView, ChangePasswordView,SkillViewSet,FreelancerProfileViewSet,ClientProfileViewSet
+from .views import RegisterView, activate, UserLoginApiView,UserViewSet ,LogoutView, UpdateProfileView, ChangePasswordView,SkillViewSet,FreelancerProfileViewSet,ClientProfileViewSet
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
 router.register(r'freelancers', FreelancerProfileViewSet)
 router.register(r'skills', SkillViewSet)
 router.register(r'client', ClientProfileViewSet)
+router.register(r'users', UserViewSet)
 urlpatterns = [
     path('', include(router.urls)),
   path('register/', RegisterView.as_view(), name='register'),
@@ -15,4 +16,3 @@ urlpatterns = [
     path('update-profile/', UpdateProfileView.as_view(), name='update_profile'),
     path('change-password/', ChangePasswordView.as_view(), name='change_password'),
 ]
-

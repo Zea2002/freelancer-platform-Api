@@ -14,7 +14,7 @@ from django.shortcuts import redirect
 from .serializers import (RegisterSerializer, UserLoginSerializer,
                           UpdateProfileSerializer, ChangePasswordSerializer, 
                           FreelancerProfileSerializer, ClientProfileSerializer, 
-                          SkillSerializer)
+                          SkillSerializer,UserSerializer)
 from .models import FreelancerProfile, Skill, ClientProfile
 from .pagination import FreelancerPagination
 from django_filters.rest_framework import DjangoFilterBackend
@@ -151,3 +151,14 @@ class FreelancerProfileViewSet(viewsets.ModelViewSet):
 class SkillViewSet(viewsets.ModelViewSet):
     queryset = Skill.objects.all()
     serializer_class = SkillSerializer
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        user_type = self.request.query_params.get('user_type', None)
+        if user_type:
+            queryset = queryset.filter(user_type=user_type)
+        return queryset

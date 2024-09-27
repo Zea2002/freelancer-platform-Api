@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import FreelancerProfile, Skill, ClientProfile
+from .models import FreelancerProfile, Skill, ClientProfile,User
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 
@@ -52,6 +52,10 @@ class RegisterSerializer(serializers.ModelSerializer):
         return account
 
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'user_type']
 
 class UserLoginSerializer(serializers.Serializer):
     username= serializers.CharField(required = True)

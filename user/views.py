@@ -64,9 +64,7 @@ def activate(request, uid64, token):
         user.save()
 
         # Redirect to frontend login page after successful activation
-        frontend_domain = request.get_host()
-        frontend_login_url = f"http://{frontend_domain}/login?activated=true"
-        return redirect(frontend_login_url)
+        return Response("Your account is active now.You can login")
     else:
         frontend_domain = request.get_host()
         frontend_register_url = f"http://{frontend_domain}/register"
@@ -83,12 +81,16 @@ class UserLoginApiView(views.APIView):
             
             if user:
                 token, _ = Token.objects.get_or_create(user=user)
-                login(request, user)  
-                return Response({'token': token.key, 'user_id': user.id}, status=status.HTTP_200_OK)
+                login(request, user)
+                return Response({
+                    'token': token.key, 
+                    'user_id': user.id, 
+                    'user_type': user.user_type
+                }, status=status.HTTP_200_OK)
             else:
                 return Response({'error': "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+    
 class LogoutView(views.APIView):
     permission_classes = [IsAuthenticated]
 

@@ -1,5 +1,6 @@
 from rest_framework import viewsets, permissions
 from .models import Proposal
+from user.models import User
 from .serializers import ProposalSerializer
 from user.permission import IsFreelancer
 from .pagination import ProposalPagination
@@ -12,7 +13,8 @@ class ProposalViewSet(viewsets.ModelViewSet):
     # permission_classes=[IsFreelancer]
 
     def perform_create(self, serializer):
-        if hasattr(self.request.user, 'freelancer_profile'):
+        # Check if user is freelancer and has a freelancer profile
+        if self.request.user.user_type == User.FREELANCER and hasattr(self.request.user, 'freelancer_profile'):
             freelancer_profile = self.request.user.freelancer_profile
             serializer.save(freelancer=freelancer_profile)
         else:

@@ -55,7 +55,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'user_type']
+        fields = ['id', 'username', 'email', 'user_type', 'first_name', 'last_name']
 
 class UserLoginSerializer(serializers.Serializer):
     username= serializers.CharField(required = True)

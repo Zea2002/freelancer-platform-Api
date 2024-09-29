@@ -85,7 +85,8 @@ class UserLoginApiView(views.APIView):
                 return Response({
                     'token': token.key, 
                     'user_id': user.id, 
-                    'user_type': user.user_type
+                    'user_type': user.user_type,
+                    'username': user.username
                 }, status=status.HTTP_200_OK)
             else:
                 return Response({'error': "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)

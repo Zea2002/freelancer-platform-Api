@@ -9,7 +9,7 @@ class ProposalViewSet(viewsets.ModelViewSet):
     queryset = Proposal.objects.all()
     serializer_class = ProposalSerializer
     pagination_class = ProposalPagination
-    permission_classes = [permissions.IsAuthenticated] 
+
 
     
     def get_queryset(self):

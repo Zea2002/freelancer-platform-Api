@@ -14,7 +14,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     
     
-    filterset_fields = ['category'] 
+    filterset_fields = ['category','client'] 
     
     
     ordering_fields = ['budget']

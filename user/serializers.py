@@ -9,15 +9,24 @@ class SkillSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class FreelancerProfileSerializer(serializers.ModelSerializer):
-    skills = SkillSerializer(many=True, read_only=True)
-    user = serializers.StringRelatedField()
+    skills = SkillSerializer(many=True)  
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), write_only=True) 
+    user_display = serializers.StringRelatedField(source='user', read_only=True) 
 
     class Meta:
         model = FreelancerProfile
-        fields = '__all__'
+        fields = '__all__' 
+
+    def create(self, validated_data):
+        skills_data = validated_data.pop('skills') 
+        user = validated_data.pop('user')  
+
+       
+        freelancer_profile = FreelancerProfile.objects.create(user=user, **validated_data)
 
 class ClientProfileSerializer(serializers.ModelSerializer):
-    user = serializers.StringRelatedField()
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), write_only=True)  
+    user_display = serializers.StringRelatedField(source='user', read_only=True)
 
     class Meta:
         model = ClientProfile

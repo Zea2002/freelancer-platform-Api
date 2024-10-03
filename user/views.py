@@ -134,7 +134,9 @@ class ClientProfileViewSet(viewsets.ModelViewSet):
     queryset = ClientProfile.objects.all()
     serializer_class = ClientProfileSerializer
     # permission_classes = [IsAuthenticated]  
-
+    
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
     def get_queryset(self):
         return self.queryset.filter(user=self.request.user)
 

@@ -137,13 +137,23 @@ class ClientProfileViewSet(viewsets.ModelViewSet):
 class FreelancerProfileViewSet(viewsets.ModelViewSet):
     queryset = FreelancerProfile.objects.all()
     serializer_class = FreelancerProfileSerializer
-    pagination_class = FreelancerPagination
+    pagination_class = FreelancerPagination  
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_fields = ['skills']
     search_fields = ['skills__name']
+    permission_classes = [IsAuthenticated] 
+
+    def create(self, request, *args, **kwargs):
+        data = request.data.copy()
+        data['user'] = request.user.id
+        
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def get_queryset(self):
-        queryset = FreelancerProfile.objects.all()
+        queryset = super().get_queryset()
         skill_slug = self.request.query_params.get('skill', None)
         if skill_slug:
             skill = Skill.objects.filter(slug=skill_slug).first()

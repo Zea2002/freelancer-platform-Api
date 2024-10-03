@@ -133,12 +133,14 @@ class ChangePasswordView(views.APIView):
 class ClientProfileViewSet(viewsets.ModelViewSet):
     queryset = ClientProfile.objects.all()
     serializer_class = ClientProfileSerializer
-    # permission_classes = [IsAuthenticated]  
-    
-    def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
+    # permission_classes = [IsAuthenticated]  # Ensure the user is authenticated
+
     def get_queryset(self):
-        return self.queryset.filter(user=self.request.user)
+        queryset = super().get_queryset()
+        # If you need to filter based on the authenticated user
+        if self.request.user.is_authenticated:
+            queryset = queryset.filter(user=self.request.user)
+        return queryset
 
 class FreelancerProfileViewSet(viewsets.ModelViewSet):
     queryset = FreelancerProfile.objects.all()
@@ -149,14 +151,6 @@ class FreelancerProfileViewSet(viewsets.ModelViewSet):
     search_fields = ['skills__name']
     # permission_classes = [IsAuthenticated] 
 
-    def create(self, request, *args, **kwargs):
-        data = request.data.copy()
-        data['user'] = request.user.id
-        
-        serializer = self.get_serializer(data=data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def get_queryset(self):
         queryset = super().get_queryset()

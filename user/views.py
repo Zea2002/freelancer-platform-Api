@@ -133,7 +133,7 @@ class ChangePasswordView(views.APIView):
 class ClientProfileViewSet(viewsets.ModelViewSet):
     queryset = ClientProfile.objects.all()
     serializer_class = ClientProfileSerializer
-    permission_classes = [IsAuthenticated]  
+    # permission_classes = [IsAuthenticated]  
 
     def get_queryset(self):
         return self.queryset.filter(user=self.request.user)
@@ -145,7 +145,7 @@ class FreelancerProfileViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_fields = ['skills']
     search_fields = ['skills__name']
-    permission_classes = [IsAuthenticated] 
+    # permission_classes = [IsAuthenticated] 
 
     def create(self, request, *args, **kwargs):
         data = request.data.copy()

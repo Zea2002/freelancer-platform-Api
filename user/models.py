@@ -31,9 +31,9 @@ class FreelancerProfile(models.Model):
     portfolio_url = models.URLField(blank=True)
     phone = models.CharField(max_length=12)
     bio = models.TextField(blank=True)
-    is_verified = models.BooleanField(default=False)
+    is_verified = models.BooleanField(default=False,blank=True)
     location = models.CharField(max_length=30)
-    balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00,blank=True)
 
     def __str__(self):
         return f'{self.user.first_name} {self.user.last_name}'
@@ -46,8 +46,8 @@ class ClientProfile(models.Model):
     company_website = models.URLField(blank=True)
     bio = models.TextField(blank=True)
     location = models.CharField(max_length=30)
-    is_verified = models.BooleanField(default=False)
-    balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    is_verified = models.BooleanField(default=False,blank=True)
+    balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00,blank=True)
 
     def __str__(self):
         return f'{self.user.first_name} {self.user.last_name}'

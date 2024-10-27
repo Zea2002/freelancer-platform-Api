@@ -130,7 +130,7 @@ class ChangePasswordView(views.APIView):
 class ClientProfileViewSet(viewsets.ModelViewSet):
     queryset = ClientProfile.objects.all()
     serializer_class = ClientProfileSerializer
-    filterset_fields = ['user']
+    filterset_fields = ['user__username']
     # permission_classes = [IsAuthenticated]  # Ensure the user is authenticated
 
     def get_queryset(self):

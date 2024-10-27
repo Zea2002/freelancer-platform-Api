@@ -62,14 +62,12 @@ def activate(request, uid64, token):
     if user is not None and default_token_generator.check_token(user, token):
         user.is_active = True
         user.save()
-        
-        frontend_domain = request.get_host()
-        frontend_login_url = f"http://{frontend_domain}/login"
-        return redirect(frontend_login_url) 
+
+      
+        return Response({"message": "Your account is active now. You can log in."}, status=status.HTTP_200_OK)
     else:
-        frontend_domain = request.get_host()
-        frontend_register_url = f"http://{frontend_domain}/register"
-        return redirect(frontend_register_url)
+        return Response({"error": "Activation link is invalid or expired."}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class UserLoginApiView(views.APIView):
     def post(self, request):

@@ -10,7 +10,6 @@ from rest_framework.response import Response
 from rest_framework import status, views, viewsets
 from rest_framework.permissions import IsAuthenticated
 from django.core.mail import EmailMultiAlternatives
-from django.shortcuts import redirect
 from .serializers import (RegisterSerializer, UserLoginSerializer,
                           UpdateProfileSerializer, ChangePasswordSerializer, 
                           FreelancerProfileSerializer, ClientProfileSerializer, 
@@ -19,7 +18,8 @@ from .models import FreelancerProfile, Skill, ClientProfile
 from .pagination import FreelancerPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter
-from rest_framework.decorators import api_view
+from django.http import JsonResponse
+
 
 User = get_user_model()
 
@@ -53,7 +53,6 @@ class RegisterView(views.APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # Account activation view
-@api_view(['GET'])
 def activate(request, uid64, token):
     try:
         uid = force_str(urlsafe_base64_decode(uid64))
@@ -64,9 +63,9 @@ def activate(request, uid64, token):
     if user is not None and default_token_generator.check_token(user, token):
         user.is_active = True
         user.save()
-        return Response({"message": "Your account is active now. You can log in."}, status=status.HTTP_200_OK)
+        return JsonResponse({"message": "Your account is active now. You can log in."}, status=200)
     else:
-        return Response({"error": "Activation link is invalid or expired."}, status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse({"error": "Activation link is invalid or expired."}, status=400)
 
 class UserLoginApiView(views.APIView):
     def post(self, request):

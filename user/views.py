@@ -145,7 +145,7 @@ class FreelancerProfileViewSet(viewsets.ModelViewSet):
     serializer_class = FreelancerProfileSerializer
     pagination_class = FreelancerPagination  
     filter_backends = [DjangoFilterBackend, SearchFilter]
-    filterset_fields = ['skills','username']
+    filterset_fields = ['skills','user__username']
     search_fields = ['skills__name']
     # permission_classes = [IsAuthenticated] 
 

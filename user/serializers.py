@@ -12,7 +12,7 @@ class FreelancerProfileSerializer(serializers.ModelSerializer):
     skills = serializers.PrimaryKeyRelatedField(queryset=Skill.objects.all(), many=True, write_only=True)
     skill = serializers.StringRelatedField(many=True, source='skills', read_only=True)
     user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), write_only=True) 
-    username = serializers.StringRelatedField(source='user', many=True, write_only=True) 
+    username = serializers.StringRelatedField(source='user', read_only=True) 
 
     class Meta:
         model = FreelancerProfile

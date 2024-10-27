@@ -19,6 +19,7 @@ from .models import FreelancerProfile, Skill, ClientProfile
 from .pagination import FreelancerPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter
+from rest_framework.decorators import api_view
 
 User = get_user_model()
 
@@ -52,6 +53,7 @@ class RegisterView(views.APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # Account activation view
+@api_view(['GET'])
 def activate(request, uid64, token):
     try:
         uid = force_str(urlsafe_base64_decode(uid64))
@@ -62,12 +64,9 @@ def activate(request, uid64, token):
     if user is not None and default_token_generator.check_token(user, token):
         user.is_active = True
         user.save()
-
-      
         return Response({"message": "Your account is active now. You can log in."}, status=status.HTTP_200_OK)
     else:
         return Response({"error": "Activation link is invalid or expired."}, status=status.HTTP_400_BAD_REQUEST)
-
 
 class UserLoginApiView(views.APIView):
     def post(self, request):

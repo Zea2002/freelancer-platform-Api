@@ -52,6 +52,13 @@ class RegisterView(views.APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # Account activation view
+from django.shortcuts import redirect
+from django.http import HttpResponse
+from django.utils.http import urlsafe_base64_decode
+from django.utils.encoding import force_str
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth.models import User
+
 def activate(request, uid64, token):
     try:
         uid = force_str(urlsafe_base64_decode(uid64))
@@ -62,9 +69,10 @@ def activate(request, uid64, token):
     if user is not None and default_token_generator.check_token(user, token):
         user.is_active = True
         user.save()
-
-        # Redirect to frontend login page after successful activation
-        return Response("Your account is active now.You can login")
+        
+        frontend_domain = request.get_host()
+        frontend_login_url = f"http://{frontend_domain}/login"
+        return redirect(frontend_login_url) 
     else:
         frontend_domain = request.get_host()
         frontend_register_url = f"http://{frontend_domain}/register"

@@ -18,7 +18,7 @@ from .models import FreelancerProfile, Skill, ClientProfile
 from .pagination import FreelancerPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter
-from django.shortcuts import redirect
+from django.http import HttpResponseRedirect
 
 
 User = get_user_model()
@@ -63,9 +63,9 @@ def activate(request, uid64, token):
     if user is not None and default_token_generator.check_token(user, token):
         user.is_active = True
         user.save()
-        return redirect('login')
+        return HttpResponseRedirect("/login.html?message=Account activated successfully. Please log in.")
     else:
-        return redirect('register')
+        return HttpResponseRedirect("/register.html?message=Activation link is invalid or expired.")
 
 class UserLoginApiView(views.APIView):
     def post(self, request):

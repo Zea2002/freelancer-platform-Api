@@ -63,9 +63,10 @@ def activate(request, uid64, token):
     if user is not None and default_token_generator.check_token(user, token):
         user.is_active = True
         user.save()
-        return HttpResponseRedirect("/login.html?message=Account activated successfully. Please log in.")
+        return HttpResponseRedirect("/login/?message=Account activated successfully. Please log in.")
     else:
-        return HttpResponseRedirect("/register.html?message=Activation link is invalid or expired.")
+        # Redirect to Django's register view with an error message
+        return HttpResponseRedirect("/register/?message=Activation link is invalid or expired.")
 
 class UserLoginApiView(views.APIView):
     def post(self, request):

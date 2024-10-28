@@ -18,7 +18,7 @@ from .models import FreelancerProfile, Skill, ClientProfile
 from .pagination import FreelancerPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter
-from django.http import JsonResponse
+from django.shortcuts import redirect
 
 
 User = get_user_model()
@@ -63,9 +63,9 @@ def activate(request, uid64, token):
     if user is not None and default_token_generator.check_token(user, token):
         user.is_active = True
         user.save()
-        return JsonResponse({"message": "Your account is active now. You can log in."}, status=200)
+        return redirect('login')
     else:
-        return JsonResponse({"error": "Activation link is invalid or expired."}, status=400)
+        return redirect('register')
 
 class UserLoginApiView(views.APIView):
     def post(self, request):

@@ -25,12 +25,18 @@
                     }
                 })
                 .then(data => {
-                    alert(data.message); 
-                    window.location.href = '/login.html';
+                    alert(data.message);
+                    
+                    setTimeout(() => {
+                        window.location.href = '/login.html'; 
+                    }, 2000); 
                 })
                 .catch(error => {
                     alert(error.message); 
-                    window.location.href = '/register.html';
+                   
+                    setTimeout(() => {
+                        window.location.href = '/register.html'; 
+                    }, 2000); 
                 });
         };
     </script>
